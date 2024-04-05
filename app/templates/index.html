@@ -16,36 +16,50 @@
 <body>
 
 <div class="container my-5">
-    <div class="p-5">
+    <div class="p-2">
         Game
     </div>
-    <div class="p-5">
+    <div class="p-2">
         <div class="row">
             <div class="col">
-                {% if game_state.game_running %}
-                <div class="spinner-border text-primary" ></div>
-                Game Stage: {{ game_state.stage }}
-                {% else %}
-                Game Not Running
-                {% endif %}
+                <div class="card m-2">
+                    <div class="card-body">
+                        {% if game_state.status == 'running' %}
+                        <div class="spinner-border text-primary" ></div>
+                        <p class="card-text">Game Stage: {{ game_state.stage }}</p>
+                        {% elif game_state.status == 'stopped' %}
+                        <p class="card-text">Game Stage: {{ game_state.stage }}</p>
+                        {% else %}
+                        <p class="card-text">Press Start to start the game!</p>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <form action="/quit" method="post">
-                    <button class="btn btn-secondary" type="submit">Shutdown</button>
-                </form>
+                <div class="card m-2">
+                    <div class="card-body">
+                        <form action="/quit" method="post">
+                            <button class="btn btn-secondary" type="submit">Shutdown</button>
+                        </form>
+                    </div>
+                </div>
             </div>
             <div class="col">
-                {% if game_state.game_running %}
-                <form action="/reset" method="post">
-                    <button class="btn btn-primary" type="submit">Reset</button>
-                </form>
-                {% else %}
-                <form action="/start" method="post">
-                    <button class="btn btn-success" type="submit">Start Game</button>
-                </form>
-                {% endif %}
+                <div class="card m-2">
+                    <div class="card-body">
+                        {% if game_state.status == 'stopped' %}
+                        <form action="/reset" method="post">
+                            <button class="btn btn-primary" type="submit">Reset</button>
+                        </form>
+                        {% elif game_state.status == 'init' %}
+                        <form action="/start" method="post">
+                            <button class="btn btn-success" type="submit">Start Game</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

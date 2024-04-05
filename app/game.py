@@ -11,7 +11,7 @@ from typing import Optional
 @dataclasses.dataclass
 class GameState:
     stage: Optional[str] = None
-    game_running: bool = False
+    status: str = 'init'
 
 
 # Separate background thread to run the game independently of Flask.
@@ -25,7 +25,7 @@ class Game(Thread):
     def __init__(self, mediator: Queue):
         super().__init__()
         self.mediator = mediator
-        self._game_state = GameState(game_running=False)
+        self._game_state = GameState()
 
     # Called when the Thread is started
     def run(self):
@@ -40,7 +40,7 @@ class Game(Thread):
             next_command = self.mediator.get()
 
             if next_command == 'n':
-                if not self._game_state.game_running:
+                if self._game_state.status == 'init':
                     self.new_game()
             if next_command == 'r':
                 self._game_state = GameState()
@@ -49,8 +49,7 @@ class Game(Thread):
                 return
 
     def new_game(self):
-        self._game_state = GameState(game_running=True)
-
+        self._game_state.status = 'running'
         self._game_state.stage = 'player1 turn'
         # Sleep and do nothing - pretend player 1 turn
         sleep(10)
@@ -60,3 +59,4 @@ class Game(Thread):
         sleep(10)
 
         self._game_state.stage = 'player1 wins'
+        self._game_state.status = 'stopped'
